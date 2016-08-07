@@ -1,0 +1,4 @@
+---
+
+beet_domain: drupal.local
+beet_root: "{{ beet_base }}/docroot"
