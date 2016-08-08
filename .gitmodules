@@ -1,0 +1,3 @@
+[submodule "docroot"]
+	path = docroot
+	url = https://git.drupal.org/project/drupal.git
