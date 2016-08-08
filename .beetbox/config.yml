@@ -1,6 +1,7 @@
 ---
 # Vagrant config.
 vagrant_box: "beet/dev"
+vagrant_box_version: ">= 0.3.374"
 vagrant_ip: 192.168.88.88
 
 beet_domain: d8.ddns.net
