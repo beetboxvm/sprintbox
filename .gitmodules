@@ -1,3 +1,9 @@
 [submodule "docroot"]
 	path = docroot
 	url = https://git.drupal.org/project/drupal.git
+[submodule ".beetbox/roles/sprintbox.shout"]
+	path = .beetbox/roles/sprintbox.shout
+	url = https://github.com/beetboxvm/ansible-role-beetbox-shout.git
+[submodule ".beetbox/roles/sprintbox.drush_iq"]
+	path = .beetbox/roles/sprintbox.drush_iq
+	url = https://github.com/beetboxvm/ansible-role-beetbox-drush_iq.git

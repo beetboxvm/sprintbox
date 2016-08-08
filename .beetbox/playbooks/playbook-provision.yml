@@ -63,8 +63,6 @@
       when: "{{ installed_extras_ruby }}"
     - role: rvm_io.rvm1-ruby
       when: "{{ installed_extras_rvm }}"
-    - role: heskethm.wp-cli
-      when: "{{ installed_extras_wp_cli }}"
     - role: beetboxvm.drupal
       when: "'{{ beet_project }}' == 'drupal'"
     - role: beetbox-web
@@ -73,6 +71,8 @@
       when: "{{ installed_extras_apparmor }}"
     - role: alexdesignworks.dcr
       when: "{{ installed_extras_dcr }}"
+    - role: sprintbox.drush_iq
+    - role: sprintbox.shout
 
   tasks:
 
