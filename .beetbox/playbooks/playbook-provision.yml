@@ -1,0 +1,97 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  vars:
+    beet_profile: "{{ lookup('env','BEET_PROFILE') | default('beetbox',true) }}"
+
+  vars_files:
+    - "config/profiles/{{ beet_profile }}.config.yml"
+    - config/project.config.yml
+    - config/host.config.yml
+    - config/config.yml
+    - config/local.config.yml
+
+  pre_tasks:
+
+    - name: Install drupal dependencies with composer.
+      composer:
+        command: install
+        working_dir: "{{ beet_base }}/docroot"
+      become: no
+
+    - include: "{{ item }}"
+      with_fileglob:
+        - "{{ beet_custom_pre_tasks }}"
+
+  roles:
+
+    - role: geerlingguy.apache
+      when: "{{ installed_extras_apache }}"
+    - role: geerlingguy.mysql
+      when: "{{ installed_extras_mysql }}"
+    - role: beetbox-php-ppa
+      when: "{{ installed_extras_php }}"
+    - role: beetbox-php-7.0
+      when: "'{{ installed_extras_php }}' and '{{ php_version }}' == '7.0'"
+    - role: geerlingguy.php
+      when: "{{ installed_extras_php }}"
+    - role: geerlingguy.php-pecl
+      when: "{{ installed_extras_pecl }}"
+    - role: geerlingguy.php-mysql
+      when: "{{ installed_extras_mysql }}"
+    - role: geerlingguy.composer
+      when: "{{ installed_extras_composer }}"
+    - role: geerlingguy.drush
+      when: "{{ installed_extras_drush }}"
+    - role: geerlingguy.drupal-console
+      when: "{{ installed_extras_drupal_console }}"
+    - role: thom8.php-upload-progress
+      when: "{{ installed_extras_upload_progress }}"
+    - role: geerlingguy.php-xdebug
+      when: "{{ installed_extras_xdebug }}"
+    - role: geerlingguy.php-xhprof
+      when: "{{ installed_extras_xhprof }}"
+    - role: geerlingguy.daemonize
+      when: "{{ installed_extras_mailhog }}"
+    - role: geerlingguy.mailhog
+      when: "{{ installed_extras_mailhog }}"
+    - role: geerlingguy.nodejs
+      when: "{{ installed_extras_nodejs }}"
+    - role: geerlingguy.ruby
+      when: "{{ installed_extras_ruby }}"
+    - role: rvm_io.rvm1-ruby
+      when: "{{ installed_extras_rvm }}"
+    - role: heskethm.wp-cli
+      when: "{{ installed_extras_wp_cli }}"
+    - role: beetboxvm.drupal
+      when: "'{{ beet_project }}' == 'drupal'"
+    - role: beetbox-web
+      when: "{{ installed_extras_web }}"
+    - role: beetbox-apparmor
+      when: "{{ installed_extras_apparmor }}"
+    - role: alexdesignworks.dcr
+      when: "{{ installed_extras_dcr }}"
+
+  tasks:
+
+    - name: Set ownership of beet_user home directory.
+      file:
+        path: "/home/{{ beet_user }}"
+        state: directory
+        owner: "{{ beet_user }}"
+        group: "{{ beet_user }}"
+        recurse: yes
+
+    - include: "{{ item }}"
+      with_fileglob:
+        - "{{ beet_custom_post_tasks }}"
+
+    - name: Create welcome message.
+      template:
+        src: "{{ welcome_template }}"
+        dest: "{{ beet_home }}/.beetbox/welcome.txt"
+        force: yes
+        mode: 0644
+      become: no
