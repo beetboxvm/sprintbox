@@ -1,8 +1,25 @@
 ---
-# Vagrant config.
+
+# Vagrant configuration.
+
 vagrant_box: "beet/dev"
 vagrant_box_version: ">= 0.3.374"
 vagrant_ip: 192.168.88.88
 
+
+
+# Beetbox configuration.
+
 beet_domain: d8.ddns.net
 beet_root: "{{ beet_base }}/docroot"
+
+
+
+# Firewall configuration.
+
+firewall_allowed_tcp_ports:
+  - "22"
+  - "80"
+  - "443"
+  - "7000"
+  - "8025"
