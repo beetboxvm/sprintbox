@@ -1,0 +1,79 @@
+FROM debian:jessie
+
+# Set installer version.
+ENV INSTALLER_VERSION 1.0.0
+# Set Sprintbox version.
+ENV SPRINTBOX_VERSION 1.0.0
+
+# Run updates.
+RUN apt-get update && apt-get -y install \
+		autoconf build-essential curl \
+		libxml2-dev libssl-dev \
+		p7zip-full \
+		hfsplus hfsutils hfsprogs cpio
+
+# We need the bomutils to create the Mac OS X Bill of Materials (BOM) files.
+# https://github.com/hogliux/bomutils
+RUN curl -fsSL https://github.com/hogliux/bomutils/archive/0.2.tar.gz | tar xvz && \
+	cd bomutils-* && \
+	make && make install
+
+# Needed to pack/unpack the .pkg files.
+RUN curl -fsSL https://github.com/mackyle/xar/archive/xar-1.6.1.tar.gz | tar xvz && \
+	cd xar-*/xar && \
+	./autogen.sh && ./configure && \
+	make && make install
+
+# Copy Distribution config file.
+COPY osx/mpkg/Distribution /mpkg/Distribution
+
+#
+# Install VirtualBox.
+#
+ENV VBOX_VERSION 5.0.20
+ENV VBOX_REV 106931
+
+# Download VirtualBox.
+RUN curl -fsSL -o /vbox.dmg http://download.virtualbox.org/virtualbox/$VBOX_VERSION/VirtualBox-$VBOX_VERSION-$VBOX_REV-OSX.dmg \
+	&& echo "$(curl -fsSL 'http://download.virtualbox.org/virtualbox/'"$VBOX_VERSION"'/SHA256SUMS' | awk '$2 ~ /-OSX.dmg$/ { print $1 }') */vbox.dmg" | sha256sum -c -
+
+#  Extract the VirtualBox .pkg.
+RUN mkdir -p /mpkg/vbox && \
+	cd /mpkg/vbox && \
+	7z x /vbox.dmg -ir'!*.hfs' && \
+	7z x $(find . -name '*.hfs') -ir'!*.pkg' && \
+	mv VirtualBox/VirtualBox.pkg . && \
+	rm -rf vbox.dmg && \
+	rm -rf $(find . -name '*.hfs')
+
+# Extract VirtualBox .pkg files.
+RUN cd /mpkg/vbox && \
+	mv VirtualBox.pkg /tmp && \
+	xar -xf /tmp/VirtualBox.pkg && \
+	rm -rf /tmp/VirtualBox.pkg
+
+# Get VirtualBox file sizes and move files to the installer build dir.
+RUN cd /mpkg/vbox && \
+  sed -i \
+	    -e "s/%VBOX_KEXT_SIZE%/`du -sk VBoxKEXTs.pkg | cut -f1`/g" \
+	    -e "s/%VBOX_SIZE%/`du -sk VirtualBox.pkg | cut -f1`/g" \
+	    -e "s/%VBOX_CLI_SIZE%/`du -sk VirtualBoxCLI.pkg | cut -f1`/g" \
+	    /mpkg/Distribution && \
+	mv *.pkg .. && \
+	rm -rf vbox
+
+# Copy resourses and installer plugins.
+RUN echo test12
+COPY osx/mpkg/Resources /mpkg/Resources
+COPY osx/mpkg/Plugins /mpkg/Plugins
+
+# Replace installer version in installer welcome message.
+RUN sed -i -e "s/%INSTALLER_VERSION%/$INSTALLER_VERSION/g" mpkg/Resources/en.lproj/welcome.rtfd/TXT.rtf
+
+# Replace VirtualBox version variable with environment variables.
+RUN sed -i -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" /mpkg/Distribution && \
+		sed -i -e "s/%VBOX_VERSION%/$VBOX_VERSION/g" mpkg/Resources/en.lproj/Localizable.strings
+
+# Create a package.
+# --compression=none is mandatory or this won't install in OSX.
+RUN cd /mpkg && xar -c --compression=none -f /Sprintbox.pkg .

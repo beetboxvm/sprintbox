@@ -1,0 +1,13 @@
+'sprintbox_title' = 'Sprintbox';
+
+'choiceVBox_title' = 'Oracle VM VirtualBox %VBOX_VERSION%';
+'choiceVBox_msg' = 'Installs or Upgrades the Oracle VM VirtualBox application into /Applications if it is not already installed.';
+
+'RUNNING_VMS_TLE' = "Please Quit VirtualBox!";
+'RUNNING_VMS_MSG' = "The installer has detected that VirtualBox is out of date, and is still running. Please shut down all VMs, quit VirtualBox, and then restart the Sprintbox installation.";
+
+'UNSUPPORTED_HW_MACHINE_TLE' = "Unsupported hardware architecture detected!";
+'UNSUPPORTED_HW_MACHINE_MSG' = "The installer has detected an unsupported architecture. VirtualBox only runs on the x86 and amd64 architectures.";
+
+'UNSUPPORTED_OS_TLE' = "Unsupported OS version detected!";
+'UNSUPPORTED_OS_MSG' = "The installer has detected an unsupported operation system. Please upgrade to Mac OS X 10.8 or later.";

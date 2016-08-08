@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DOCKERFILE=Dockerfile.osx
+PACKAGENAME=Sprintbox.pkg
+BUILD_DIR=dist
+CONTAINER_NAME=osx-installer
+
+docker build -t $CONTAINER_NAME -f $DOCKERFILE .
+CONTAINER="$(docker run -d $CONTAINER_NAME)"
+mkdir -p $BUILD_DIR
+docker cp "${CONTAINER}":/$PACKAGENAME $BUILD_DIR/
+docker rm "${CONTAINER}" 2>/dev/null || true
