@@ -7,3 +7,6 @@
 [submodule ".beetbox/roles/sprintbox.drush_iq"]
 	path = .beetbox/roles/sprintbox.drush_iq
 	url = https://github.com/beetboxvm/ansible-role-beetbox-drush_iq.git
+[submodule ".beetbox/roles/sprintbox.cloud9"]
+	path = .beetbox/roles/sprintbox.cloud9
+	url = https://github.com/beetboxvm/ansible-role-beetbox-cloud9.git
