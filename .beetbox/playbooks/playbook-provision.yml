@@ -73,7 +73,11 @@
     - role: alexdesignworks.dcr
       when: "{{ installed_extras_dcr }}"
     - role: sprintbox.drush_iq
+      tags: drush_iq
     - role: sprintbox.shout
+      tags: shout
+    - role: sprintbox.cloud9
+      tags: cloud9
 
   tasks:
 
