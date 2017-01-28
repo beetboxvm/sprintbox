@@ -3,7 +3,6 @@
 ## Installation.
 
   ```
-  git clone https://github.com/beetboxvm/sprintbox.git sprintbox && cd $_
-  git submodule update --init
+  git clone --recursive https://github.com/beetboxvm/sprintbox.git sprintbox && cd $_
   vagrant up
   ```
